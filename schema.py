@@ -1,9 +1,9 @@
 import graphene
+from home.shcema import HomeQuery
 
 
-
-class Query(graphene.ObjectType):
-    hello = graphene.String(default_value = 'Hi beauty!')
+class Query(HomeQuery, graphene.ObjectType):
+    pass
 
 
 schema = graphene.Schema(query=Query)
