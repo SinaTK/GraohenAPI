@@ -40,6 +40,12 @@ class PersonInput(graphene.InputObjectType):
     age = graphene.Int()
 
 
+class CarInput(graphene.InputObjectType):
+    person_id = graphene.ID()
+    model = graphene.String()
+    year = graphene.Int()
+
+
 class CreatePerson(graphene.Mutation):
     class Arguments:
         input = PersonInput(required=True)
@@ -86,7 +92,22 @@ class DeletePerson(graphene.Mutation):
         return DeletePerson(person=peron_instance, ok=ok)
 
 
+class CreateCar(graphene.Mutation):
+    class Arguments:
+        input = CarInput()
+
+    car = graphene.Field(CarType)
+    ok = graphene.Boolean(default_value = False)
+    
+    def mutate(root, info, input=None):
+        person = get_object_or_404(Person, id=input.person_id)
+        car_instance = Car.objects.create(owner=person, model=input.model, year=input.year)
+        ok = True
+        return CreateCar(car=car_instance, ok=ok)
+
+
 class HomeMutation(graphene.ObjectType):
     create_person = CreatePerson.Field()
     update_person = UpdatePerson.Field()
     delete_person = DeletePerson.Field()
+    create_car = CreateCar.Field()
