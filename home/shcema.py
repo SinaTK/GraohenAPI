@@ -33,3 +33,60 @@ class  HomeQuery(graphene.ObjectType):
     def resolve_car(root, info, **kwargs):
         model = kwargs.get('model')
         return get_object_or_404(Car, model=model)
+    
+
+class PersonInput(graphene.InputObjectType):
+    name = graphene.String()
+    age = graphene.Int()
+
+
+class CreatePerson(graphene.Mutation):
+    class Arguments:
+        input = PersonInput(required=True)
+
+    person = graphene.Field(PersonType)
+    ok = graphene.Boolean(default_value=False)
+
+    def mutate(root, info, input=None):
+        person = Person.objects.create(name=input.name, age=input.age)
+        ok = True
+        return CreatePerson(person=person, ok=ok)
+    
+
+class UpdatePerson(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required=True)
+        input = PersonInput()
+    
+    person = graphene.Field(PersonType)
+    ok = graphene.Boolean(default_value=False)
+
+    def mutate(root, info, id, input):
+        person_instance = get_object_or_404(Person, id=id)
+        if input.name is not None:
+            person_instance.name = input.name
+        if input.age is not None:
+            person_instance.age = input.age
+        person_instance.save()
+        ok = True
+        return UpdatePerson(person=person_instance, ok=ok)
+
+
+class DeletePerson(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+    
+    person = graphene.Field(PersonType)
+    ok = graphene.Boolean(default_value=False)
+
+    def mutate(root, info, id):
+        peron_instance = get_object_or_404(Person, id=id)
+        peron_instance.delete()
+        ok = True
+        return DeletePerson(person=peron_instance, ok=ok)
+
+
+class HomeMutation(graphene.ObjectType):
+    create_person = CreatePerson.Field()
+    update_person = UpdatePerson.Field()
+    delete_person = DeletePerson.Field()
