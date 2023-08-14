@@ -9,7 +9,7 @@ class Person(models.Model):
         return '{}, {} years old.'.format(self.name, self.age)
 
 class Car(models.Model):
-    owner = models.ForeignKey(Person, on_delete=models.CASCADE)
+    owner = models.ManyToManyField(Person)
     model = models.CharField(max_length=100)
     year = models.IntegerField()
 
