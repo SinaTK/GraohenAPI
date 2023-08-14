@@ -1,12 +1,12 @@
 import graphene
 from home.shcema import HomeQuery, HomeMutation
+from accounts.schema import AccountsQuery, AccountsMutation
 
-
-class Query(HomeQuery, graphene.ObjectType):
+class Query(HomeQuery,AccountsQuery, graphene.ObjectType):
     pass
 
 
-class Mutation(HomeMutation, graphene.ObjectType):
+class Mutation(HomeMutation,AccountsMutation, graphene.ObjectType):
     pass
 
 
